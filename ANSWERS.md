@@ -174,3 +174,13 @@ Para asegurar entrega fiable, diseñaría el sistema con semántica **at-least-o
 - **Resiliencia ante proveedores**: **circuit breaker** y timeouts; si el proveedor falla temporalmente, pausar/reintentar y, si aplica, **failover** a un segundo proveedor (email/SMS).
 
 Con esto, el servicio de transacciones permanece estable y la entrega de notificaciones se vuelve robusta frente a fallos temporales y picos.
+
+#### Flexibilidad (añadir nuevos canales como push)
+
+Diseñaría el sistema siguiendo **Open/Closed**: el core de notificaciones no cambia al agregar canales; solo se añaden adaptadores.
+
+- **Modelo de dominio por “intención”**: `NotificationRequest` (destinatario, canal(es), template, variables, prioridad) y `NotificationResult`.
+- **Abstracción por canal**: interfaz tipo `NotificationChannel` (o *port*) con implementaciones `EmailChannel`, `SmsChannel`, `PushChannel`, etc. (patrón **Strategy** / **Ports & Adapters**).
+- **Routing configurable**: selección de canal por **preferencias del usuario**, tipo de evento, país/operador, fallback (email→SMS→push), usando configuración o reglas.
+- **Plantillas y contenido**: motor de templates (versionadas) para reutilizar contenido y evitar lógica por canal en el core.
+- **Contrato de eventos estable**: eventos de transacción/versionados para que nuevos consumidores/canales se incorporen sin romper productores.
