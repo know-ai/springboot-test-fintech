@@ -96,3 +96,16 @@ También existe un enfoque **asíncrono basado en hilos** (no reactivo):
 
 
 
+## Seguridad
+
+### 1) Cómo proteger una API REST en Spring Boot (componentes clave de Spring Security)
+
+En Spring Boot protegería la API con **Spring Security** configurando una cadena de filtros y reglas de autorización:
+
+- **`SecurityFilterChain`**: define las reglas HTTP (qué endpoints requieren auth, roles/scopes, etc.).
+- **Filtros de autenticación** (p. ej. un `OncePerRequestFilter`): extraen el token (por ejemplo `X-API-KEY` o `Authorization: Bearer ...`), lo validan y construyen el `Authentication` en el `SecurityContext`.
+- **`AuthenticationManager` / `AuthenticationProvider`**: encapsulan la verificación de credenciales/token.
+- **Autorización**: `authorizeHttpRequests(...)` (y opcionalmente **`@EnableMethodSecurity`** para `@PreAuthorize` a nivel de método).
+- **Manejo de errores de seguridad**: `AuthenticationEntryPoint` (401) y `AccessDeniedHandler` (403) para respuestas consistentes.
+- **Hardening típico para REST**: `SessionCreationPolicy.STATELESS` (sin sesión), **CSRF deshabilitado** si no hay cookies, y **CORS** configurado si aplica.
+
