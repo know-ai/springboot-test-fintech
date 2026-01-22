@@ -109,3 +109,15 @@ En Spring Boot protegería la API con **Spring Security** configurando una caden
 - **Manejo de errores de seguridad**: `AuthenticationEntryPoint` (401) y `AccessDeniedHandler` (403) para respuestas consistentes.
 - **Hardening típico para REST**: `SessionCreationPolicy.STATELESS` (sin sesión), **CSRF deshabilitado** si no hay cookies, y **CORS** configurado si aplica.
 
+### 2) ¿Qué es SQL Injection y cómo prevenirlo con JPA/Hibernate?
+
+Un ataque de **inyección SQL** ocurre cuando un atacante logra que la aplicación ejecute SQL/JPQL **alterando la consulta** mediante entrada no confiable (típicamente por **concatenación de strings**), pudiendo leer/modificar/borrar datos o evadir controles.
+
+Cómo prevenirlo en Spring Boot con JPA/Hibernate:
+
+- **Usar parámetros enlazados (bind parameters)** en JPQL/SQL (`:param`, `?1`), nunca concatenar entrada del usuario en la query.
+- **Preferir Spring Data JPA** (métodos derivados) o **Criteria API/Specifications** para construir consultas de forma segura.
+- Si usas **native queries**, seguir usando **parámetros** (no interpolación) y evitar construir fragmentos SQL dinámicos con input.
+- **Validar** y restringir entrada (p. ej., rangos, enums, longitudes). Esto complementa, pero **no reemplaza**, el binding de parámetros.
+- **Principio de mínimo privilegio** en la cuenta de BD: reduce el impacto si algo falla (por ejemplo, sin permisos innecesarios de `DROP/ALTER`).
+
