@@ -65,4 +65,16 @@ En Spring, **IoC** significa que el framework (a través del **`ApplicationConte
 
 La **DI** es el mecanismo mediante el cual Spring **proporciona** a un objeto las dependencias que necesita (otros beans), normalmente mediante **inyección por constructor** (la recomendada), logrando **desacoplamiento**, **reutilización** y **testabilidad** (fácil reemplazo por mocks/stubs).
 
+### 2) Singleton vs Prototype en Spring (cuándo usar cada uno)
+
+En Spring, **Singleton** y **Prototype** se refieren al **scope del bean**:
+
+- **Singleton (`@Scope("singleton")`, por defecto)**: Spring crea **una sola instancia por `ApplicationContext`** y la reutiliza en cada inyección/lookup.  
+  - **Úsalo** para componentes **sin estado mutable por request**: `@Service`, `@Repository`, `@Controller`, clients HTTP, mappers, etc. (el estado debe ser thread-safe o inexistente).
+
+- **Prototype (`@Scope("prototype")`)**: Spring crea **una nueva instancia cada vez** que se solicita el bean.  
+  - **Úsalo** cuando necesitas un objeto **con estado por uso** (no thread-safe) o una construcción costosa que quieres materializar bajo demanda; p. ej., builders/handlers por operación.
+
+Nota: el “singleton” de Spring **no** es un Singleton clásico global; es **singleton por contenedor** (por contexto de aplicación).
+
 
