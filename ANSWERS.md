@@ -134,3 +134,20 @@ Buenas prácticas en Spring (y en general):
 - Ajustar el **cost factor** (work factor) para hacer caro el brute force y permitir subirlo con el tiempo.
 - Opcional: **pepper** (secreto del servidor) además del salt, y medidas complementarias como rate limiting/bloqueo de intentos.
 
+
+---
+
+## Sección 3: Resolución de Problemas y Arquitectura
+
+### Escenario: Sistema de Notificaciones de Transacciones
+
+#### Arquitectura (integración y comunicación con el servicio de transacciones)
+
+Lo implementaría como un **servicio independiente (microservicio) de notificaciones**, desacoplado del servicio de transacciones. El servicio de transacciones **no debería llamar** al de notificaciones en el camino crítico del commit; en su lugar, **publica un evento** y notificaciones lo consume.
+
+- **Integración**: el servicio de transacciones emite un **evento de dominio** (p. ej. `TransactionCompleted`) cuando una transferencia se confirma.
+- **Comunicación recomendada**: **asíncrona y orientada a eventos** vía broker (**Kafka/RabbitMQ**).
+  - Notificaciones consume el evento y orquesta envíos (email/SMS) con proveedores externos.
+- **Consistencia entre BD y evento**: usar **Transactional Outbox** (o CDC) para asegurar que “se confirmó la transacción” y “se publicó el evento” no se desincronicen.
+
+Si hubiese casos que requieren respuesta inmediata (p. ej., consultar preferencias de notificación del usuario), eso sí sería una llamada **síncrona** (HTTP/gRPC) desde notificaciones a un servicio de usuarios/perfiles, manteniendo la entrega de notificaciones como flujo asíncrono.
