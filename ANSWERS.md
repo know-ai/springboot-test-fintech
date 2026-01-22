@@ -38,4 +38,23 @@ El **aislamiento** define cuánto “ven” entre sí las transacciones concurre
   - **Previene**: **lecturas sucias**, **no repetibles** y **fantasma**.  
   - **Coste**: más bloqueos y mayor probabilidad de esperas/errores por contención bajo alta concurrencia.
 
+### 3) Reglas de rollback por defecto en Spring y cómo personalizarlas
+
+Por defecto, Spring hace **rollback** de una transacción declarada con `@Transactional` cuando el método termina lanzando:
+
+- **`RuntimeException`** (excepciones no chequeadas) o cualquier subclase.
+- **`Error`** (fallos graves de la JVM).
+
+Y por defecto **NO** hace rollback (hace *commit*) cuando el método lanza una **excepción chequeada** (`checked exception`, subclase de `Exception` que no es `RuntimeException`), salvo que se configure explícitamente.
+
+Cómo personalizarlo:
+
+- **Con atributos de `@Transactional`**:
+  - **`rollbackFor = { ... }`**: forzar rollback también para excepciones chequeadas específicas.
+  - **`noRollbackFor = { ... }`**: evitar rollback para excepciones concretas (aunque sean `RuntimeException`).
+  - (Equivalentes “por nombre”: `rollbackForClassName` / `noRollbackForClassName`).
+- **Programático**:
+  - **`TransactionTemplate`** (recomendado si quieres control explícito sin AOP).
+  - Marcar rollback manualmente: `TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()`.
+
 
