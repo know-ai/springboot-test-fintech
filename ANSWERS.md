@@ -121,3 +121,16 @@ Cómo prevenirlo en Spring Boot con JPA/Hibernate:
 - **Validar** y restringir entrada (p. ej., rangos, enums, longitudes). Esto complementa, pero **no reemplaza**, el binding de parámetros.
 - **Principio de mínimo privilegio** en la cuenta de BD: reduce el impacto si algo falla (por ejemplo, sin permisos innecesarios de `DROP/ALTER`).
 
+### 3) Importancia de almacenar contraseñas de forma segura (técnicas/algoritmos)
+
+Es crítico porque, si la base de datos se filtra, contraseñas en claro (o “hashes” débiles) permiten **toma de cuentas** y **credential stuffing** en otros servicios. La meta es que robar la BD **no** equivalga a obtener contraseñas.
+
+Buenas prácticas en Spring (y en general):
+
+- **Nunca** guardar contraseñas en texto plano ni con hashes rápidos (MD5/SHA-1/SHA-256 “a pelo”).
+- Usar **hashing adaptativo con salt** (único por usuario, generado automáticamente):
+  - **Recomendado**: **Argon2id** (password hashing moderno).
+  - Alternativa común: **BCrypt** (ampliamente soportado).
+- Ajustar el **cost factor** (work factor) para hacer caro el brute force y permitir subirlo con el tiempo.
+- Opcional: **pepper** (secreto del servidor) además del salt, y medidas complementarias como rate limiting/bloqueo de intentos.
+
