@@ -151,3 +151,14 @@ Lo implementaría como un **servicio independiente (microservicio) de notificaci
 - **Consistencia entre BD y evento**: usar **Transactional Outbox** (o CDC) para asegurar que “se confirmó la transacción” y “se publicó el evento” no se desincronicen.
 
 Si hubiese casos que requieren respuesta inmediata (p. ej., consultar preferencias de notificación del usuario), eso sí sería una llamada **síncrona** (HTTP/gRPC) desde notificaciones a un servicio de usuarios/perfiles, manteniendo la entrega de notificaciones como flujo asíncrono.
+
+#### Escalabilidad y Rendimiento (picos de miles de notificaciones/min sin afectar transacciones)
+
+Usaría un enfoque **asíncrono** y **elástico** para que el servicio de transacciones no quede acoplado a la latencia/capacidad del envío:
+
+- **Colas / pub-sub** (Kafka o RabbitMQ): absorben picos y desacoplan productores/consumidores.  
+  - Kafka: particiones + **consumer groups** para escalar horizontalmente el procesamiento.
+- **Procesamiento asíncrono en notificaciones**: workers stateless con **auto-scaling** (Kubernetes/HPA) basado en lag/throughput.
+- **Backpressure y rate limiting** hacia proveedores (email/SMS): limitar QPS, aplicar **bulkheads** y **circuit breakers** para no saturar el sistema.
+- **Batching** y optimización de I/O: agrupar envíos cuando el proveedor lo permita y reutilizar conexiones (pools).
+- **Priorización**: colas separadas o prioridades (p. ej., transacciones “críticas” vs marketing) para cumplir SLOs.
