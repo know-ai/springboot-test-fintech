@@ -18,4 +18,24 @@ Si **no** se utiliza `@Transactional` en operaciones que deben ser atómicas:
 - **El rollback no agrupa los cambios**: una excepción puede ocurrir después de que ya se hayan persistido cambios previos.
 - Bajo concurrencia, se incrementa el riesgo de **condiciones de carrera** y resultados no deseados si no se aplica una estrategia transaccional/locking adecuada.
 
+### 2) Niveles de aislamiento (Isolation Levels) y qué problema previene cada uno
+
+El **aislamiento** define cuánto “ven” entre sí las transacciones concurrentes. A mayor aislamiento, menos anomalías; a cambio, suele haber más bloqueo/contención y menor throughput.
+
+- **`READ_UNCOMMITTED`**: permite leer cambios **no confirmados** de otras transacciones.  
+  - **Previene**: nada relevante.  
+  - **Anomalía típica**: **lectura sucia (dirty read)**. Ej.: lees un saldo “debitado” por una transferencia que luego hace rollback.
+
+- **`READ_COMMITTED`** (común por defecto en muchos motores): solo permite leer datos **confirmados**.  
+  - **Previene**: **lecturas sucias**.  
+  - **Aún permite**: **lecturas no repetibles**. Ej.: en la misma transacción consultas el saldo dos veces y entre medias otra transacción lo actualiza y confirma.
+
+- **`REPEATABLE_READ`**: garantiza que si lees una fila, lecturas posteriores de esa fila dentro de la misma transacción no cambian.  
+  - **Previene**: **lecturas sucias** y **lecturas no repetibles**.  
+  - **Aún puede permitir**: **lecturas fantasma (phantom read)** (dependiendo del motor/implementación). Ej.: haces `SELECT` de “transacciones del día” y otra transacción inserta una nueva que aparece en una segunda lectura.
+
+- **`SERIALIZABLE`**: el nivel más estricto; el resultado es equivalente a ejecutar transacciones **en serie**.  
+  - **Previene**: **lecturas sucias**, **no repetibles** y **fantasma**.  
+  - **Coste**: más bloqueos y mayor probabilidad de esperas/errores por contención bajo alta concurrencia.
+
 
