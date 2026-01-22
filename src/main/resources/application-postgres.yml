@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/fintech}
+    username: ${SPRING_DATASOURCE_USERNAME:fintech}
+    password: ${SPRING_DATASOURCE_PASSWORD:fintech}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+fintech:
+  security:
+    api-key: ${FINTECH_API_KEY:change-me}
+
+

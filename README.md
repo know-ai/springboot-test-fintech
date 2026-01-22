@@ -26,6 +26,30 @@ chmod +x mvnw
 
 Por defecto levanta en `http://localhost:8080`.
 
+## PostgreSQL (persistencia real)
+
+Para ejecutar con PostgreSQL local (via Docker):
+
+```bash
+docker compose up -d
+```
+
+Luego levanta la app con el perfil **postgres**:
+
+```bash
+SPRING_PROFILES_ACTIVE=postgres ./mvnw spring-boot:run
+```
+
+Variables (defaults en `application-postgres.yml`):
+
+- `SPRING_DATASOURCE_URL` (default `jdbc:postgresql://localhost:5432/fintech`)
+- `SPRING_DATASOURCE_USERNAME` (default `fintech`)
+- `SPRING_DATASOURCE_PASSWORD` (default `fintech`)
+
+## Migraciones (Flyway)
+
+El esquema se gestiona con **Flyway** y se aplica automáticamente al iniciar la app.
+
 ## Documentación API (Swagger / OpenAPI)
 
 - **Swagger UI**: `http://localhost:8080/swagger-ui.html`
@@ -69,6 +93,39 @@ Para evitar inconsistencias bajo concurrencia (doble gasto, carreras), la transf
 
 ```bash
 ./mvnw test
+```
+
+Tests de integración (incluye `*IT` y tests con Postgres vía Testcontainers):
+
+```bash
+./mvnw verify
+```
+
+### Tests usando PostgreSQL (Testcontainers)
+
+El proyecto incluye tests de integración contra **PostgreSQL real** usando **Testcontainers** (Docker).  
+No necesitas levantar PostgreSQL manualmente: el contenedor se crea y destruye automáticamente durante el test.
+
+- **Requisito**: Docker funcionando (el comando `docker ps` debe responder).
+- **Ejecutar solo el test de PostgreSQL**:
+
+```bash
+./mvnw verify -Dit.test=PostgresSmokeIT
+```
+
+#### Troubleshooting (si Testcontainers “no encuentra Docker”)
+
+Si ves errores relacionados con `DOCKER_API_VERSION` o “client version too old”, prueba:
+
+```bash
+unset DOCKER_API_VERSION
+./mvnw verify
+```
+
+Para omitir integration tests:
+
+```bash
+./mvnw verify -DskipITs=true
 ```
 
 ## Endpoints (Sección 2)
