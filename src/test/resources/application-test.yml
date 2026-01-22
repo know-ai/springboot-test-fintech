@@ -12,4 +12,8 @@ spring:
         jdbc:
           time_zone: UTC
 
+fintech:
+  security:
+    api-key: test-key
+
 

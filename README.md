@@ -33,6 +33,21 @@ Por defecto levanta en `http://localhost:8080`.
 
 > En este punto el proyecto es un **template**: la aplicación levanta y la documentación carga, pero los endpoints del ejercicio se implementarán en la siguiente sección.
 
+## Seguridad (API Key)
+
+Los endpoints del ejercicio están protegidos con una **API Key** en el header:
+
+- Header: `X-API-KEY`
+- Config: `fintech.security.api-key` en `application.yml`
+
+Ejemplo:
+
+```bash
+curl -H "X-API-KEY: change-me" http://localhost:8080/accounts/1
+```
+
+Swagger/OpenAPI quedan accesibles sin API key.
+
 ## Modelo / Contratos (Sección 2)
 
 - **Modelo de dominio**:
@@ -54,5 +69,38 @@ Para evitar inconsistencias bajo concurrencia (doble gasto, carreras), la transf
 
 ```bash
 ./mvnw test
+```
+
+## Endpoints (Sección 2)
+
+### Crear cuenta
+
+- `POST /accounts`
+
+```bash
+curl -X POST http://localhost:8080/accounts \
+  -H "Content-Type: application/json" \
+  -H "X-API-KEY: change-me" \
+  -d '{"initialBalance": 100.00}'
+```
+
+### Consultar cuenta
+
+- `GET /accounts/{accountId}`
+
+```bash
+curl http://localhost:8080/accounts/1 \
+  -H "X-API-KEY: change-me"
+```
+
+### Transferencia
+
+- `POST /transactions`
+
+```bash
+curl -X POST http://localhost:8080/transactions \
+  -H "Content-Type: application/json" \
+  -H "X-API-KEY: change-me" \
+  -d '{"sourceAccountId": 1, "destinationAccountId": 2, "amount": 10.00}'
 ```
 

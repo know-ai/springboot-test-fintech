@@ -24,4 +24,8 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+fintech:
+  security:
+    api-key: change-me
+
 

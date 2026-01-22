@@ -73,7 +73,12 @@ public class TransferMoneyService {
                 destination.getId(),
                 amount.amount()));
 
-    return new TransferMoneyResult(tx.getId(), tx.getCreatedAt());
+    return new TransferMoneyResult(
+        tx.getId(),
+        tx.getSourceAccountId(),
+        tx.getDestinationAccountId(),
+        tx.getAmount(),
+        tx.getCreatedAt());
   }
 
   public static final class AccountNotFound extends DomainException {
