@@ -162,3 +162,15 @@ Usaría un enfoque **asíncrono** y **elástico** para que el servicio de transa
 - **Backpressure y rate limiting** hacia proveedores (email/SMS): limitar QPS, aplicar **bulkheads** y **circuit breakers** para no saturar el sistema.
 - **Batching** y optimización de I/O: agrupar envíos cuando el proveedor lo permita y reutilizar conexiones (pools).
 - **Priorización**: colas separadas o prioridades (p. ej., transacciones “críticas” vs marketing) para cumplir SLOs.
+
+#### Fiabilidad (entrega fiable y qué hacer ante fallas temporales de email/SMS)
+
+Para asegurar entrega fiable, diseñaría el sistema con semántica **at-least-once** y controles para tolerar duplicados:
+
+- **Persistencia del “intento de notificación”** (outbox/inbox o tabla de envíos): estado `PENDING/SENT/FAILED`, timestamps y motivo de fallo para auditoría y reintentos.
+- **Idempotencia / deduplicación**: usar un `notificationId`/`eventId` y garantizar que procesar el mismo evento dos veces no genere doble envío (o que sea detectable).
+- **Reintentos automáticos**: backoff exponencial + jitter; límites por tipo de error (timeouts/5xx sí, 4xx no).
+- **DLQ (Dead Letter Queue)**: mensajes que exceden reintentos van a una cola de fallos para inspección y reproceso controlado.
+- **Resiliencia ante proveedores**: **circuit breaker** y timeouts; si el proveedor falla temporalmente, pausar/reintentar y, si aplica, **failover** a un segundo proveedor (email/SMS).
+
+Con esto, el servicio de transacciones permanece estable y la entrega de notificaciones se vuelve robusta frente a fallos temporales y picos.
