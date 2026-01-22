@@ -26,6 +26,21 @@ chmod +x mvnw
 
 Por defecto levanta en `http://localhost:8080`.
 
+## Docker (producción)
+
+Levantar **PostgreSQL + App** listos para producción (build incluido):
+
+```bash
+docker compose up -d --build
+```
+
+La app expone `http://localhost:8080` y la DB `localhost:5432` (solo si lo necesitas fuera de Docker).
+
+Variables importantes:
+
+- **API key**: `FINTECH_API_KEY` (default `change-me`)
+- **DB**: `SPRING_DATASOURCE_URL/USERNAME/PASSWORD` (por defecto apuntan al servicio `postgres` del compose)
+
 ## PostgreSQL (persistencia real)
 
 Para ejecutar con PostgreSQL local (via Docker):

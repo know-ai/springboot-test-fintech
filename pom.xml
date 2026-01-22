@@ -21,6 +21,7 @@
     <java.version>21</java.version>
     <springdoc.version>2.5.0</springdoc.version>
     <testcontainers.version>1.20.4</testcontainers.version>
+    <dockerjava.version>3.4.1</dockerjava.version>
   </properties>
 
   <dependencies>
@@ -97,6 +98,26 @@
       <groupId>org.testcontainers</groupId>
       <artifactId>postgresql</artifactId>
       <version>${testcontainers.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Pin docker-java to a version compatible with modern Docker API versions -->
+    <dependency>
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java-api</artifactId>
+      <version>${dockerjava.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java-transport</artifactId>
+      <version>${dockerjava.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java-transport-zerodep</artifactId>
+      <version>${dockerjava.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

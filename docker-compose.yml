@@ -9,6 +9,27 @@ services:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fintech -d fintech"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fintech
+      SPRING_DATASOURCE_USERNAME: fintech
+      SPRING_DATASOURCE_PASSWORD: fintech
+      FINTECH_API_KEY: change-me
+    ports:
+      - "8080:8080"
 
 volumes:
   pg_data:
