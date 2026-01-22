@@ -57,4 +57,12 @@ Cómo personalizarlo:
   - **`TransactionTemplate`** (recomendado si quieres control explícito sin AOP).
   - Marcar rollback manualmente: `TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()`.
 
+## Spring Boot y Arquitectura
+
+### 1) Inversión de control (IoC) e inyección de dependencias (DI) en Spring
+
+En Spring, **IoC** significa que el framework (a través del **`ApplicationContext`**) es quien **crea, configura y gestiona** los objetos de la aplicación (**beans**) y su ciclo de vida, en vez de que tu código los instancie manualmente.
+
+La **DI** es el mecanismo mediante el cual Spring **proporciona** a un objeto las dependencias que necesita (otros beans), normalmente mediante **inyección por constructor** (la recomendada), logrando **desacoplamiento**, **reutilización** y **testabilidad** (fácil reemplazo por mocks/stubs).
+
 
