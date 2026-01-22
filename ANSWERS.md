@@ -77,4 +77,22 @@ En Spring, **Singleton** y **Prototype** se refieren al **scope del bean**:
 
 Nota: el “singleton” de Spring **no** es un Singleton clásico global; es **singleton por contenedor** (por contexto de aplicación).
 
+### 3) Comunicación entre microservicios (Spring Boot): síncrona y asíncrona
+
+En una arquitectura con Spring Boot, la comunicación entre microservicios suele implementarse con:
+
+- **Síncrona (request/response)**: **HTTP/REST** (Spring MVC + `WebClient`/`RestTemplate` o **OpenFeign**) o **gRPC**.  
+  - **Útil cuando** necesitas respuesta inmediata (p. ej., consultar datos) y puedes tolerar acoplamiento temporal (dependencia de disponibilidad/latencia).
+
+- **`WebClient` (Spring WebFlux)**: realiza llamadas HTTP de forma **no bloqueante** y devuelve `Mono<T>`/`Flux<T>`. Conceptualmente, se parece a trabajar con *promises* en Node: componer (`map/flatMap`) y encadenar sin bloquear.
+
+También existe un enfoque **asíncrono basado en hilos** (no reactivo):
+
+- **`@Async` + `CompletableFuture<T>`**: ejecuta la llamada HTTP en un *thread pool* y devuelve un futuro; el hilo que atiende la petición puede continuar. Es útil si tu app es Spring MVC “clásico” y no quieres adoptar WebFlux.
+
+
+- **Asíncrona (event-driven)**: **mensajería/pub-sub** con **Kafka** o **RabbitMQ** (Spring for Apache Kafka / Spring AMQP), publicando **eventos** y consumiéndolos con listeners.  
+  - **Útil cuando** priorizas **desacoplamiento**, **resiliencia** y absorción de picos (p. ej., notificaciones, auditoría, integración). Suele combinarse con **idempotencia** y patrones como **Outbox** para fiabilidad.
+
+
 
